@@ -1,0 +1,25 @@
+{
+  "name": "ejercicios-escuela-it",
+  "version": "1.0.0",
+
+  "description": "ejercicios varios del curso de EscIT",
+  "main": "app.js",
+  "scripts": {
+    "test": "npm test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/USantaTecla-Mastermind/solution.Javascript.git"
+  },
+  "author": "Facundo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/USantaTecla-Mastermind/solution.Javascript/issues"
+  },
+  "homepage": "https://github.com/USantaTecla-Mastermind/solution.Javascript#readme",
+  "dependencies": {
+    "console-input": "^1.0.2",
+    "console-mpds": "^1.0.4",
+    "enums-js": "^1.0.0"
+  }
+}

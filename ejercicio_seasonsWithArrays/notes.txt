@@ -1,0 +1,11 @@
+Logica utilizada para resolver el ejercicio
+EL problema dice que Si invierno comienza el 21 de dic, primavera el 21 marzo, verano 21 junio, otoño el 21 de septiembre. 
+Teniendo cada estacion inicios, mediados y finales. Frente a una entrada de dias meses y años demos una salida de estacion
+ y periodo dentro de la estacion.
+Si tenemos meses de 30 dias solamente, tendremos un año de 360 dias.
+Podemos trabajar todo en base a dias.
+Podemos cambiar el inicio del año, debido a que invierno queda cortado, y tener un inicio de año estacional.
+Podemos inicial el año en invierno, por ejemplo.
+Como desde el dia 351 hasta el 360 y desde el 1 hasta el 81 es invierno,
+si realizamos una operacion %351 mantendremos una base determinada.
+Suponiendo que el usuario solo ingrese valores correctos.
