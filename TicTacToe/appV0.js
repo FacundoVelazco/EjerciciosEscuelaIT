@@ -8,6 +8,7 @@
  * - El juego termina cuando se llena el tablero o cuando alguien gana.
  */
 
+const { input } = require("console-input");
 const { Console } = require("../console")
 
 const console = new Console();
@@ -98,7 +99,7 @@ function coordinateInput(board){
     let ok;
     do{
         ok = true;
-        
+
         console.writeln("Ingrese una coordenada para realizar la jugada [X,Y]")
         coordinateX = console.readNumber("Ingrese una coordenada del 1-3... ");
         coordinateY = console.readNumber("Ingrese una coordenada del 1-3... ");  
