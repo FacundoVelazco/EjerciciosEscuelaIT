@@ -4,6 +4,7 @@
  * 
  * Algunas suposiciones:
  * - Hay dos jugadores.
+ * - El jugador X siempre empieza.
  * - El juego termina cuando se llena el tablero o cuando alguien gana.
  */
 
@@ -35,16 +36,14 @@ function playTicTacToe(){
     ]
     let player = 'X'
     let winner = undefined;
+    let coordinatesIndexArray;
     do{
+        console.writeln("Tablero actual...")
         drawBoard(board);
+        console.writeln(`Turno de ${player}!!!!`) 
+        coordinatesIndexArray = coordinateInput(board);
 
-        /**
-         * falta desarrollar esta parte del algoritmo
-         * 
-         * 
-         * 
-         * 
-         */
+        board[coordinatesIndexArray[0]][coordinatesIndexArray[1]] = player;
 
         if(player === 'X'){
             player='O'
@@ -93,4 +92,26 @@ function gameFinished(board){
     }
     if(boardFullySpaceCounter === 9) rtn = 'empate';
     return rtn;
+}
+function coordinateInput(board){
+    let coordinateX,coordinateY;
+    let ok;
+    do{
+        ok = true;
+        
+        console.writeln("Ingrese una coordenada para realizar la jugada [X,Y]")
+        coordinateX = console.readNumber("Ingrese una coordenada del 1-3... ");
+        coordinateY = console.readNumber("Ingrese una coordenada del 1-3... ");  
+
+        if(coordinateX < 1 || 3 < coordinateX) ok = false;
+        if(coordinateY < 1 || 3 < coordinateY) ok = false;
+        
+        if(ok){
+            if(board[coordinateX-1][coordinateY-1] === 'X' || board[coordinateX-1][coordinateY-1] === 'O') ok = false;
+        }
+        
+        if(!ok) console.writeln("Valores de coordenadas invalidos!!");
+    }while(!ok)
+
+    return [coordinateX-1,coordinateY-1]
 }
