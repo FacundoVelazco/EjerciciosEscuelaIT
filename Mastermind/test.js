@@ -1,9 +1,8 @@
-const { Console } = require("../console");
+let numbers = [1, 2, 3, 4, 5, 6, 7, 8];
 
-const console = new Console();
+let shuffledNumbers = numbers.sort(function () {
+  return Math.random() - 0.5;
+});
 
-const colors = ['R','B','G','Y','C','M']
-
-console.writeln(`${colors}`)
-console.writeln(`R`)
-console.writeln(`${colors.includes('A')}`)
+console.log(shuffledNumbers);
+// [7, 8, 3, 1, 5, 4, 2, 6]

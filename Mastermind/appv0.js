@@ -28,20 +28,59 @@ do{
 console.writeln("ADIOSSS!!!")
 
 function playMastermind(){
-    const COLORS = ['r','b','g','y','c','m']
-    
+    const COLORS = ['r','b','g','y','c','m'];
+    const CHANCES = 10;
     printRules();
 
-    const sercretColors = genSecretColors(COLORS);
+    const secretColors = genSecretColors(COLORS);
     
     console.writeln("EMPECEMOS A JUGAR!!")
-    //do{
+
+    let moves = 0, win;
+    do{
         let input = getInput(COLORS);
         
-        //respuesta
+        printBoard(input,secretColors);
+
+        win = compare(secretColors,input);
+
+        moves++;
+    }while(moves < CHANCES && !win) 
+
+    console.writeln("JUEGO TERMINADO!!!")
+    if(win){
+        console.writeln("El jugador gana!!! :D")
+    }else{
+        console.writeln("El jugador pierde!!! :D")
+
+        console.writeln(`La palabra secreta era ${secretColors}`)
+    }
+
+    console.writeln("-----------------------------------------------")
+}
+function compare(secretColors,input){
+    let equals = true;
+    for(let i =0; equals && i < secretColors.length; i++){
+        equals &&= secretColors[i] === input[i];
+    }
+    return equals;
+}
+function printBoard(input,secretColors){
+    let answer = ['-','-','-','-'];
+    for(let i=0; i < 4; i++){
+        if(secretColors.includes(input[i])){
+            answer[i] = 'O'    
+            if(secretColors[i] === input[i]){
+                answer[i] = 'X'
+            }
+        }
+    }
     
-        //repetir
-    //}while(true)
+    let shuffledAnswer = answer.sort(function () {return Math.random() - 0.5;});
+    
+    console.writeln("-----------------------------------------------")
+    console.writeln(`                  ${input} || ${shuffledAnswer}`)
+    console.writeln("-----------------------------------------------")
 
 }
 function genSecretColors(colors){
@@ -56,35 +95,19 @@ function genSecretColors(colors){
 function getInput(colors){
     let ok,input;
     do{
-        input = console.readString("Esperando respuesta...")
-        console.writeln(`${input.length}`)
+        ok = true;
+        input = console.readString("Esperando respuesta...");
 
-        //este swith esta mal utilizado,. Utilizar solo ifs.
-        switch (input){
-            case (input.length !== 4):
-                console.writeln("ERROR! Se deben ingresar 4 letras!")
-                ok = false;
-                break;
-            case (!colors.includes(input[0])):
-                console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'")
-                ok = false;
-                break;
-            case (!colors.includes(input[1])):
-                console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'")
-                ok = false;
-                break;
-            case (!colors.includes(input[2])):
-                console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'")
-                ok = false;
-                break;
-            case (!colors.includes(input[3])):
-                console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'")
-                ok = false;
-                break;
-            default:
-                ok=true;
+        if(input.length !== 4){
+            console.writeln("ERROR! Se deben ingresar 4 letras!");
+            ok = false;
         }
-    }while(!ok)
+        for(let i = 0; ok && i < 4; i++){
+            ok &&= colors.includes(input[i]);
+
+            if(!ok) console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'");  
+        }
+    }while(!ok);
 
     return input;
 }
