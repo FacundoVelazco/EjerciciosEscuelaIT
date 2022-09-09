@@ -17,7 +17,6 @@ function playMastermind(){
     const COLORS = ['r','b','g','y','c','m'];
     const CHANCES = 10;
     printRules();
-    
     const secretColors = genSecretColors(COLORS);
     
     console.writeln("EMPECEMOS A JUGAR!!")
@@ -45,7 +44,6 @@ function getInput(colors){
     do{
         ok = true;
         input = console.readString("Esperando respuesta...");
-        
         if(input.length !== 4){
             console.writeln("ERROR! Se deben ingresar 4 letras!");
             ok = false;
@@ -53,7 +51,7 @@ function getInput(colors){
         for(let i = 0; ok && i < 4; i++){
             ok &&= colors.includes(input[i]);
             if(!ok) 
-            console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'");  
+                console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'");  
         }
     }while(!ok);
     
@@ -66,22 +64,25 @@ function compare(secretColors,input){
     return equals;
 }
 function printBoard(input,secretColors){
+    const clue = genClue(input,secretColors);
+    console.writeln("-----------------------------------------------")
+    console.writeln(`                  ${input} || ${clue}`)
+    console.writeln("-----------------------------------------------")
+}
+function genClue(input,secretColors){
     const INCLUDED_SYMBOL = 'O';
     const SUCCESS_SYMBOL = 'X';
     const EMPTY_SYMBOL = '-';
-    const answer = [EMPTY_SYMBOL,EMPTY_SYMBOL,EMPTY_SYMBOL,EMPTY_SYMBOL];
+    const clue = [];
     for(let i=0; i < 4; i++){
-        if(secretColors.includes(input[i])){
-            answer[i] = INCLUDED_SYMBOL;    
-            if(secretColors[i] === input[i]){
-                answer[i] = SUCCESS_SYMBOL;
-            }
-        }
+        if(secretColors[i] === input[i])
+            clue.unshift(SUCCESS_SYMBOL);
+        else if(secretColors.includes(input[i]))
+            clue.push(INCLUDED_SYMBOL);    
     }
-    let shuffledAnswer = answer.sort(function () {return Math.random() - 0.5;});
-    console.writeln("-----------------------------------------------")
-    console.writeln(`                  ${input} || ${shuffledAnswer}`)
-    console.writeln("-----------------------------------------------")
+    for(let i=clue.length; i < 4;i++)
+        clue.push(EMPTY_SYMBOL);
+    return clue.toString();
 }
 function gameFinished(win,secretColors){
     console.writeln("JUEGO TERMINADO!!!")
