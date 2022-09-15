@@ -1,13 +1,3 @@
-/**
- * Tic tac toe orientado a pocesos
- * de curso de Escuela IT
- * 
- * Algunas suposiciones:
- * - Hay dos jugadores.
- * - El jugador X siempre empieza.
- * - El juego termina cuando se llena el tablero o cuando alguien gana.
- */
-
 const { input } = require("console-input");
 const { Console } = require("../console")
 
