@@ -20,8 +20,21 @@ function createObjectCar(model,color){
     }
 }
 
-const myCar = createObjectCar('Volkswagen Vento','White');
 
+//Patron module para manejar objetos.
+function createCarModuled(modelo,colorcito){
+    let self = this;
+    let model, color;
+    model = modelo;
+    color = colorcito;
+
+    self.getModel = () => model;
+    self.getColor = () => color;
+    self.createResume = () => [model,color]
+
+    return self;
+}
+const myCar = createCarModuled('Volkswagen Vento','White');
 console.log(myCar);
 console.log(myCar.createResume());
 console.log(myCar.getModel());
@@ -52,8 +65,8 @@ const Car = {
     }
 }
 
-//Definicion de clases luego de Ecmascript 6
-//modelado de herencia
+//Definicion de clases luego de Ecmascript 6, orientado a clases.
+//modelado de herencia.
 class vehiculo{
     marca;
     constructor(marca){
@@ -80,9 +93,13 @@ class Auto extends vehiculo{
     }
 
 }
-//const volkswagenVento = new Car.Car('Volkswagen Vento','White','2019','240','20000')
 
-const fiatDuna = new Auto("Fiat","Duna","Rojo","1999","120","4_000","240_000")
+//Patron module para manejar objetos.
+function myObjectModuled(parametro1){
+    let self = this;
+    let entrada = parametro1;
+    self.getInfo = () => entrada;
 
-    
 
+    return self;
+}

@@ -2,23 +2,14 @@ const { Console } = require("../../console");
 
 const console = new Console();
 
-/**
- * Patron: voy a utilizar el patron factory para crear los objetos.
- * + Podria tener:
- *  - objeto MENU que muestre el menu del juego y pida respuesta de jugar o no -- listo
- *  - objeto GAME que represente a la jugada especifica y gestione su tiempo de vida.
- *  - objeto SECRET COMBINATION que representa la cadena secreta, la genere y gestione.
- *  - objeto USER RESPONSE que se ocupe de los ingresos del usuario.
- *  - objeto RULES que explica brevemente como jugar -- listo
- */
-
 playMasterMind();
 
 function playMasterMind(){
     let menu = createGameMenu();
     let response, game;
     do{
-        response = menu.show();
+        menu.show();
+        response = menu.getResponse();
         if(response){
             game = initGame();
             game.play();
@@ -45,38 +36,121 @@ function initGame(){
             that.secretColors.genSecretColors();
             let lastAttemp = null;
             do{
-                lastAttemp = createAttemp(that.colors,that.secretColors);
-                lastAttemp.run()
-                that.attemps[that.attemps.length] = lastAttemp;
-            }while(attemps.length < chances && lastAttemp.isWinnerAttemp());
-            
+                console.writeln(that.secretColors.getSecretColors());
+                console.writeln(`Intentos restantes: ${that.chances - that.attemps.length}`);
+                lastAttemp = createAttemp(that.colors,that.secretColors,that.findSymbol,that.includesSymbol,that.emptySymbol);
+                lastAttemp.run();
+                lastAttemp.show(); 
+                that.attemps.push(lastAttemp);
+            }while(that.attemps.length < that.chances && !lastAttemp.isWinnerAttemp());
 
+            if(lastAttemp.isWinnerAttemp())
+                console.writeln("El jugador gana!!!!! :D");
+            else 
+                console.writeln("El jugador pierde!!!!! ;{");
         }
     }
 }
-function createAttemp(colors,secretColors){
-    //seguir logica del intento
-    //un intento tendra el ingreso del jugador
-    //y la comparacion de ese ingreso con la cadena secreta.
-    //luego le podremos preguntar si es un intento ganador o no.
+function createAttemp(colors,secretColors,findSymbol,includesSymbol,emptySymbol){
+    let that = {
+        colors:colors,
+        secretColors:secretColors,
+        findSymbol:findSymbol,
+        includesSymbol:includesSymbol,
+        emptySymbol:emptySymbol,
+        userInput:null,
+        clue:null
+    }
+    return {
+        run: function(){
+            that.userInput = createUserInput(that.colors);
+            that.userInput.genUserInput();
+            that.clue = createClue(that.secretColors,that.userInput,that.findSymbol,that.includesSymbol,that.emptySymbol);
+            that.clue.genClue();
+        },
+        show: function(){
+            console.writeln("------------------------------------------")
+            console.writeln(`|       Ingreso: ${that.userInput.getUserInput()}   Pista: ${that.clue.getClue()}      |`);
+            console.writeln("------------------------------------------")
+        },
+        isWinnerAttemp: function(){
+            win = true;
+            for(let i = 0; i < 4; i++)
+                win &&= that.clue.getClue()[i] === that.findSymbol;
+            return win;
+        }
+    }
 }
-//terminar esta
-//function createUserInput(colors){
-//
-//}
+function createClue(secretColors,userInput,findSymbol,includesSymbol,emptySymbol){
+    let that = {
+        secretColors:secretColors,
+        userInput:userInput,
+        findSymbol:findSymbol,
+        includesSymbol:includesSymbol,
+        emptySymbol:emptySymbol,
+        clue:""
+    }
+    return{
+        genClue: function(){
+            let secretColors = that.secretColors.getSecretColors();
+            let userInput = that.userInput.getUserInput();
+            const clue = [];
+            for(let i=0; i < 4; i++){
+                if(secretColors[i] === userInput[i])
+                    clue.unshift(that.findSymbol); 
+                else if(secretColors.includes(userInput[i]))
+                    clue.push(that.includesSymbol);    
+            }
+            for(let i=clue.length; i < 4;i++)
+                clue.push(that.emptySymbol);
+            that.clue = clue[0] + clue[1] + clue[2] + clue[3];
+        },
+        getClue: function(){
+            return that.clue;
+        }
+    }
+}
+function createUserInput(colors){
+    let that = {
+        colors: colors,
+        userInput : ''
+    }
+    return {
+        genUserInput: function(){
+            let ok,input;
+            do{
+                ok = true;
+                input = console.readString("Esperando respuesta...");
+                if(input.length !== 4){
+                    console.writeln("ERROR! Se deben ingresar 4 letras!");
+                    ok = false;
+                }
+                for(let i = 0; ok && i < 4; i++){
+                    ok &&= that.colors.includes(input[i]);
+                    if(!ok) 
+                        console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'");  
+                }
+            }while(!ok);
+
+            that.userInput = input;
+        },
+        getUserInput: function(){
+            return that.userInput; 
+        }
+    }
+}
 function createSecretColors(colors){
     let that = {
         colors: colors,
-        secretColors:''
+        secretColors:""
     }
     return{
         genSecretColors: function(){
-            let generatedSecretColors = [];
+            that.secretColors = "";
             for(let i = 0; i < 4; i++){
                 let randomIndex = parseInt(Math.random() * that.colors.length);
-                generatedSecretColors[i] = that.colors[randomIndex];
+                that.secretColors += that.colors[randomIndex];
             }
-            that.secretColors = generatedSecretColors;
         },
         getSecretColors: function(){
             return that.secretColors;
@@ -109,6 +183,8 @@ function createGameMenu(){
     return {
         show: function(){
             that.printMenu();
+        },
+        getResponse: function(){
             let userResponse = that.getResponse();
             return userResponse === that.optionYes;
         },
@@ -136,7 +212,7 @@ function createRules(colors,findSymbol,includesSymbol,emptySymbol){
             console.writeln(`en color y posicion, ${includesSymbol} por cada acierto en`)
             console.writeln(`color y el caracter ${emptySymbol} en cualquier otro caso`)
             console.writeln("------------------------------------------")
-            console.readString("Precione cualquier tecla para continuar...")
+            console.readString("Precione enter para continuar...")
         }
     }
 }
