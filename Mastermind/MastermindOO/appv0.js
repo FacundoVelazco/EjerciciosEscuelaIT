@@ -2,6 +2,13 @@ const { Console } = require("../../console");
 
 const console = new Console();
 
+/**
+ * Realizar adaptacion de objetos con Data.
+ * - Rule ya adaptado.
+ * - Game ya adaptado.
+ * ////partir desde game e ir en apertura.
+ */
+
 playMasterMind();
 
 function playMasterMind(){
@@ -11,38 +18,51 @@ function playMasterMind(){
         menu.show();
         response = menu.getResponse();
         if(response){
-            game = initGame();
+            game = createGame();
             game.play();
         }
-    }while(response)
+    }while(response);
     menu.farewell();
 }
-function initGame(){
+function createData(){
     let that = {
         colors: ['r','b','g','y','c','m'],
-        chances: 10,
         findSymbol: 'X',
         includesSymbol: 'O',
         emptySymbol: '-',
+        chances: 10
+    }
+    return{
+        getColors: () => that.colors,
+        getFindSymbol: () => that.findSymbol,
+        getIncludesSymbol: () => that.includesSymbol,
+        getEmptySymbol: () => that.emptySymbol,
+        getChances: () => that.chances
+    }
+}
+function createGame(){
+    let that = {
+        data: null,
         rules: null,
         secretColors: null,
         attemps: [],
     }
+    that.data = createData();
     return{
         play: function(){
-            that.rules = createRules(that.colors,that.findSymbol,that.includesSymbol,that.emptySymbol);
+            that.rules = createRules();
             that.rules.show();
-            that.secretColors = createSecretColors(that.colors);
+            that.secretColors = createSecretColors();
             that.secretColors.genSecretColors();
             let lastAttemp = null;
             do{
-                console.writeln(that.secretColors.getSecretColors());
-                console.writeln(`Intentos restantes: ${that.chances - that.attemps.length}`);
-                lastAttemp = createAttemp(that.colors,that.secretColors,that.findSymbol,that.includesSymbol,that.emptySymbol);
+                console.writeln(`Intentos restantes: ${that.data.getChances() - that.attemps.length}`);
+                //Quitar atributos de data, solo dejar that.secretColors.
+                lastAttemp = createAttemp(that.data.getColors(),that.secretColors,that.data.getFindSymbol(),that.data.getIncludesSymbol(),that.data.getEmptySymbol());
                 lastAttemp.run();
-                lastAttemp.show(); 
+                lastAttemp.show();
                 that.attemps.push(lastAttemp);
-            }while(that.attemps.length < that.chances && !lastAttemp.isWinnerAttemp());
+            }while(that.attemps.length < that.data.getChances() && !lastAttemp.isWinnerAttemp());
 
             if(lastAttemp.isWinnerAttemp())
                 console.writeln("El jugador gana!!!!! :D");
@@ -139,17 +159,18 @@ function createUserInput(colors){
         }
     }
 }
-function createSecretColors(colors){
+function createSecretColors(){
     let that = {
-        colors: colors,
+        data:null,
         secretColors:""
     }
+    that.data = createData();
     return{
         genSecretColors: function(){
             that.secretColors = "";
             for(let i = 0; i < 4; i++){
-                let randomIndex = parseInt(Math.random() * that.colors.length);
-                that.secretColors += that.colors[randomIndex];
+                let randomIndex = parseInt(Math.random() * that.data.getColors().length);
+                that.secretColors += that.data.getColors[randomIndex];
             }
         },
         getSecretColors: function(){
@@ -193,26 +214,24 @@ function createGameMenu(){
         }
     }
 }
-function createRules(colors,findSymbol,includesSymbol,emptySymbol){
+function createRules(){
     let that = {
-        colors: colors,
-        findSymbol: findSymbol,
-        includesSymbol: includesSymbol,
-        emptySymbol: emptySymbol
+        data: null
     }
+    that.data = createData();
     return{
         show: function(){
-            console.writeln("------------------------------------------")
-            console.writeln("REGLAS......")
+            console.writeln("------------------------------------------");
+            console.writeln("REGLAS......");
             console.writeln(`Debe ingresar grupos de 4 colores. Puede  `);
-            console.writeln(`elegir entre ${that.colors} ingresando la `);
+            console.writeln(`elegir entre ${that.data.getColors()} ingresando la `);
             console.writeln(`primera letra de cada color.              `);
-            console.writeln(`Ejemplo: ´${that.colors[0]},${that.colors[1]},${that.colors[2]},${that.colors[3]}´`);
-            console.writeln(`Se devolvera el caracter ${findSymbol} por cada acierto`)
-            console.writeln(`en color y posicion, ${includesSymbol} por cada acierto en`)
-            console.writeln(`color y el caracter ${emptySymbol} en cualquier otro caso`)
-            console.writeln("------------------------------------------")
-            console.readString("Precione enter para continuar...")
+            console.writeln(`Ejemplo: ´${that.data.getColors()[0]},${that.data.getColors()[1]},${that.data.getColors()[2]},${that.data.getColors()[3]}´`);
+            console.writeln(`Se devolvera el caracter ${that.data.getFindSymbol()} por cada acierto`);
+            console.writeln(`en color y posicion, ${that.data.getIncludesSymbol()} por cada acierto en`);
+            console.writeln(`color y el caracter ${that.data.getEmptySymbol()} en cualquier otro caso`);
+            console.writeln("------------------------------------------");
+            console.readString("Precione enter para continuar...");
         }
     }
 }
