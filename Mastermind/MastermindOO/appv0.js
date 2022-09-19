@@ -56,9 +56,9 @@ function createGame(){
             that.secretColors.genSecretColors();
             let lastAttemp = null;
             do{
+                console.writeln(that.secretColors.getSecretColors());
                 console.writeln(`Intentos restantes: ${that.data.getChances() - that.attemps.length}`);
-                //Quitar atributos de data, solo dejar that.secretColors.
-                lastAttemp = createAttemp(that.data.getColors(),that.secretColors,that.data.getFindSymbol(),that.data.getIncludesSymbol(),that.data.getEmptySymbol());
+                lastAttemp = createAttemp(that.secretColors);
                 lastAttemp.run();
                 lastAttemp.show();
                 that.attemps.push(lastAttemp);
@@ -71,21 +71,20 @@ function createGame(){
         }
     }
 }
-function createAttemp(colors,secretColors,findSymbol,includesSymbol,emptySymbol){
+function createAttemp(secretColors){
     let that = {
-        colors:colors,
+        data: null,
         secretColors:secretColors,
-        findSymbol:findSymbol,
-        includesSymbol:includesSymbol,
-        emptySymbol:emptySymbol,
         userInput:null,
         clue:null
     }
+    that.data = createData();
     return {
         run: function(){
-            that.userInput = createUserInput(that.colors);
+            that.userInput = createUserInput();
             that.userInput.genUserInput();
-            that.clue = createClue(that.secretColors,that.userInput,that.findSymbol,that.includesSymbol,that.emptySymbol);
+            
+            that.clue = createClue(that.secretColors,that.userInput);
             that.clue.genClue();
         },
         show: function(){
@@ -96,33 +95,32 @@ function createAttemp(colors,secretColors,findSymbol,includesSymbol,emptySymbol)
         isWinnerAttemp: function(){
             win = true;
             for(let i = 0; i < 4; i++)
-                win &&= that.clue.getClue()[i] === that.findSymbol;
+                win &&= that.clue.getClue()[i] === that.data.getFindSymbol();
             return win;
         }
     }
 }
-function createClue(secretColors,userInput,findSymbol,includesSymbol,emptySymbol){
+function createClue(secretColors,userInput){
     let that = {
+        data:null,
         secretColors:secretColors,
         userInput:userInput,
-        findSymbol:findSymbol,
-        includesSymbol:includesSymbol,
-        emptySymbol:emptySymbol,
         clue:""
     }
+    that.data = createData();
     return{
         genClue: function(){
-            let secretColors = that.secretColors.getSecretColors();
-            let userInput = that.userInput.getUserInput();
+            const secretColors = that.secretColors.getSecretColors();
+            const userInput = that.userInput.getUserInput();
             const clue = [];
             for(let i=0; i < 4; i++){
                 if(secretColors[i] === userInput[i])
-                    clue.unshift(that.findSymbol); 
+                    clue.unshift(that.data.getFindSymbol()); 
                 else if(secretColors.includes(userInput[i]))
-                    clue.push(that.includesSymbol);    
+                    clue.push(that.data.getIncludesSymbol());    
             }
             for(let i=clue.length; i < 4;i++)
-                clue.push(that.emptySymbol);
+                clue.push(that.data.getEmptySymbol());
             that.clue = clue[0] + clue[1] + clue[2] + clue[3];
         },
         getClue: function(){
@@ -130,11 +128,12 @@ function createClue(secretColors,userInput,findSymbol,includesSymbol,emptySymbol
         }
     }
 }
-function createUserInput(colors){
+function createUserInput(){
     let that = {
-        colors: colors,
+        data:null,
         userInput : ''
     }
+    that.data = createData();
     return {
         genUserInput: function(){
             let ok,input;
@@ -146,7 +145,7 @@ function createUserInput(colors){
                     ok = false;
                 }
                 for(let i = 0; ok && i < 4; i++){
-                    ok &&= that.colors.includes(input[i]);
+                    ok &&= that.data.getColors().includes(input[i]);
                     if(!ok) 
                         console.writeln("ERROR! Los colores permitidos son 'r','b','g','y','c','m'");  
                 }
@@ -170,7 +169,7 @@ function createSecretColors(){
             that.secretColors = "";
             for(let i = 0; i < 4; i++){
                 let randomIndex = parseInt(Math.random() * that.data.getColors().length);
-                that.secretColors += that.data.getColors[randomIndex];
+                that.secretColors += that.data.getColors()[randomIndex];
             }
         },
         getSecretColors: function(){
